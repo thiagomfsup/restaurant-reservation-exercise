@@ -175,6 +175,23 @@ class ReservationServiceTest {
         assertThat(reservationService.findById("res-2")).isPresent();
     }
 
+    @Test
+    void shouldThrowWhenUpdatingReservationWithNonExistentRestaurant() {
+        reservationService.addReservation(buildReservation("res-1", "1", 4, LocalDateTime.of(2026, 3, 17, 14, 0)));
+
+        Reservation updated = Reservation.builder()
+                .id("res-1")
+                .restaurantId("no-existe")
+                .customerName("Pau Lopez")
+                .customerPhone("600000000")
+                .partySize(4)
+                .startTime(LocalDateTime.of(2026, 3, 17, 14, 0))
+                .build();
+
+        assertThatThrownBy(() -> reservationService.updateReservation(updated))
+                .isInstanceOf(RestaurantNotFoundException.class);
+    }
+
     private Reservation buildReservation(String id, String restaurantId, int partySize, LocalDateTime startTime) {
         return Reservation.builder()
                 .id(id)
