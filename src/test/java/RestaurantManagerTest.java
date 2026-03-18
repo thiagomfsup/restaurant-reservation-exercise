@@ -48,9 +48,11 @@ public class RestaurantManagerTest {
         Set<Restaurant> restaurants = restaurantManager.getRestaurants();
 
         assertThat(restaurants)
+                .filteredOn(r -> r.getId() == 1)
+                .hasSize(1)
+                .first()
                 .extracting(Restaurant::getName)
-                .contains("RestauranteModificado")
-                .doesNotContain("Restaurante1");
+                .isEqualTo("RestauranteModificado");
     }
 
 }
