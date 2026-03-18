@@ -68,11 +68,9 @@ class ReservationManagementTest {
 
     @Test
     void shouldNotExceedCapacity() {
-        // Capacity is 20, fill it up
         reservationManagement.addReservation(restaurantId, "Juan", "123", 10, LocalDateTime.of(2026, 3, 23, 14, 0));
         reservationManagement.addReservation(restaurantId, "Ana", "456", 10, LocalDateTime.of(2026, 3, 23, 14, 0));
 
-        // This should exceed capacity
         Reservation r = reservationManagement.addReservation(
                 restaurantId, "Pedro", "789", 1,
                 LocalDateTime.of(2026, 3, 23, 14, 0)

@@ -33,8 +33,4 @@ public class RestaurantManagement {
     public Restaurant getRestaurant(UUID id) {
         return restaurants.get(id);
     }
-
-    public Map<UUID, Restaurant> getAllRestaurants() {
-        return restaurants;
-    }
 }

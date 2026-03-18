@@ -107,12 +107,4 @@ public class ReservationManagement {
                 .mapToInt(Reservation::getPartySize)
                 .sum();
     }
-
-    public Reservation getReservation(UUID reservationId) {
-        return reservations.get(reservationId);
-    }
-
-    public Map<UUID, Reservation> getAllReservations() {
-        return reservations;
-    }
 }
