@@ -1,0 +1,31 @@
+package Restaurant;
+
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+public class RestaurantManagement {
+    private final Map<UUID, Restaurant> restaurants = new HashMap<>();
+
+    public Restaurant addRestaurant(String name, int capacity, Map<DayOfWeek, LocalTime[]> schedule, DayOfWeek closingDay) {
+        Restaurant restaurant = new Restaurant(UUID.randomUUID(), name, capacity, schedule, closingDay);
+
+        restaurants.put(restaurant.getId(), restaurant);
+        return restaurant;
+    }
+
+    public boolean deleteRestaurant(UUID id) {
+        if (!restaurants.containsKey(id)) {
+            return false;
+        }
+
+        restaurants.remove(id);
+        return true;
+    }
+
+    public Restaurant getRestaurant(UUID id) {
+        return restaurants.get(id);
+    }
+}
