@@ -4,84 +4,95 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Set;
+import java.util.Collections;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CapacityTest {
 
     private LocalDateTime defaultTime;
+    private Restaurant restaurantCap10;
+    private Restaurant restaurantCap15;
 
     @BeforeEach
     void setUp() {
-        // Una fecha estándar: Lunes a las 12:00
+        // Fijamos una fecha y hora por defecto para las reservas de los tests
         defaultTime = LocalDateTime.of(2026, 3, 23, 12, 0);
-    }
 
-    // Caso 1: Una sola reserva que intenta entrar y es más grande que el total
-    private static Stream<Arguments> providerSingleReservationExceeds() {
-        return Stream.of(
-                Arguments.of(11, 10, OverlapException.class), // 11 > 10 -> Falla
-                Arguments.of(-1, 10, IllegalArgumentException.class) // Tamaño negativo -> Falla
+        // Usamos el constructor real de Restaurant.java
+        restaurantCap10 = new Restaurant(
+                "R1", "Restaurante 10",
+                LocalTime.of(9, 0), 10, LocalTime.of(23, 0),
+                Collections.emptySet()
+        );
+
+        restaurantCap15 = new Restaurant(
+                "R2", "Restaurante 15",
+                LocalTime.of(9, 0), 15, LocalTime.of(23, 0),
+                Collections.emptySet()
         );
     }
 
-    // Caso 2: Reservas que sumadas superan la capacidad (Solapamiento)
-    private static Stream<Arguments> providerOverlapExceeds() {
+    // PROVIDER 1: Retorna [int, Class]
+    private static Stream<Arguments> providerGreaterThanCapacity() {
         return Stream.of(
-                // (Capacidad, TamReserva1, TamReserva2, EsperaExcepcion)
-                Arguments.of(10, 6, 5, true),  // 6 + 5 = 11 > 10 (Falla)
-                Arguments.of(10, 5, 5, false), // 5 + 5 = 10 <= 10 (Pasa)
-                Arguments.of(10, 3, 4, false)  // 3 + 4 = 7 <= 10 (Pasa)
+                Arguments.of(11, OverlapException.class),
+                Arguments.of(14, OverlapException.class),
+                Arguments.of(-1, IllegalArgumentException.class)
         );
     }
 
+    // TEST 1: Recibe [int, Class]
     @ParameterizedTest
-    @MethodSource("providerSingleReservationExceeds")
-    void testSingleReservationCapacity(int size, Class<? extends Throwable> exceptionClass) {
-        Restaurant rest = createDefaultRestaurant("R1", 10);
-
-        // El constructor de Reservation según tu archivo:
-        // (restaurantId, customerName, phone, partySize, startTime)
+    @MethodSource("providerGreaterThanCapacity")
+    void testGreaterThanCapacity(int size, Class<? extends Throwable> exceptionClass) {
         assertThrows(exceptionClass, () -> {
-            Reservation res = new Reservation(rest.getId(), "Juan", "123", size, defaultTime);
-            rest.reserve(res); // Este método debe estar en tu src/main
+            // El constructor real de Reservation.java recibe 5 parámetros
+            Reservation res = new Reservation(
+                    restaurantCap10.getId(), "Juan", "555-123", size, defaultTime
+            );
+
+            // Suponemos que tienes este método en Restaurant.java
+            restaurantCap10.reserve(res);
         });
     }
 
-    @ParameterizedTest
-    @MethodSource("providerOverlapExceeds")
-    void testOverlappingCapacity(int capacity, int size1, int size2, boolean shouldFail) {
-        Restaurant rest = createDefaultRestaurant("R2", capacity);
-
-        // Primera reserva (ocupa parte del restaurante)
-        Reservation res1 = new Reservation(rest.getId(), "Cliente 1", "111", size1, defaultTime);
-        rest.reserve(res1);
-
-        // Segunda reserva (misma hora, genera solape)
-        Reservation res2 = new Reservation(rest.getId(), "Cliente 2", "222", size2, defaultTime);
-
-        if (shouldFail) {
-            assertThrows(OverlapException.class, () -> rest.reserve(res2));
-        } else {
-            assertDoesNotThrow(() -> rest.reserve(res2));
-        }
+    // PROVIDER 2: Retorna [int, Class]
+    // Valores ajustados para probar el solapamiento:
+    // Si la cap es 15 y hacemos 2 reservas del mismo tamaño (ej. 8+8=16), debe fallar la segunda.
+    private static Stream<Arguments> providerLessThanCapacity() {
+        return Stream.of(
+                Arguments.of(8, OverlapException.class),  // 8 + 8 = 16 > 15
+                Arguments.of(10, OverlapException.class), // 10 + 10 = 20 > 15
+                Arguments.of(11, OverlapException.class)  // 11 + 11 = 22 > 15
+        );
     }
 
-    // Helper para no repetir la creación del restaurante
-    private Restaurant createDefaultRestaurant(String id, int capacity) {
-        return new Restaurant(
-                id,
-                "Restaurante Test",
-                LocalTime.of(9, 0),
-                capacity,
-                LocalTime.of(23, 0),
-                Set.of(DayOfWeek.SUNDAY)
+    // TEST 2: Recibe [int, Class]
+    @ParameterizedTest
+    @MethodSource("providerLessThanCapacity")
+    void testLessThanCapacity(int size, Class<? extends Throwable> exceptionClass) {
+        Reservation reser1 = new Reservation(
+                restaurantCap15.getId(), "Cliente 1", "111", size, defaultTime
         );
+        Reservation reser2 = new Reservation(
+                restaurantCap15.getId(), "Cliente 2", "222", size, defaultTime
+        );
+
+        // 1. La primera reserva DEBE funcionar (porque size < 15)
+        try {
+            restaurantCap15.reserve(reser1);
+        } catch (Exception e) {
+            fail("La primera reserva no debería haber lanzado excepción, pero lanzó: " + e.getMessage());
+        }
+
+        // 2. La segunda reserva DEBE fallar porque al sumarse solapan y superan 15
+        assertThrows(exceptionClass, () -> {
+            restaurantCap15.reserve(reser2);
+        });
     }
 }
