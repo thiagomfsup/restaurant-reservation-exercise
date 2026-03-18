@@ -1,4 +1,7 @@
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RestaurantManagerTest {
@@ -28,6 +31,24 @@ public class RestaurantManagerTest {
         assertThat(restaurantManager.getRestaurants())
                 .doesNotContain(restaurant);
 
+    }
+
+    @Test
+    void editRestaurant() {
+        restaurantManager = new RestaurantManager();
+        Restaurant restaurant = new Restaurant(1, "Restaurante1", 100);
+        restaurantManager.addRestaurant(restaurant);
+
+        // Modificamos
+        restaurant.setName("RestauranteModificado");
+        restaurantManager.modifyRestaurant(restaurant);
+
+        Set<Restaurant> restaurants = restaurantManager.getRestaurants();
+
+        assertThat(restaurants)
+                .extracting(Restaurant::getName)
+                .contains("RestauranteModificado")
+                .doesNotContain("Restaurante1");
     }
 
 }

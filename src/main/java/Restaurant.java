@@ -12,6 +12,25 @@ public class Restaurant {
         this.capacity = capacity;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
 
     @Override
     public int hashCode() {
