@@ -47,10 +47,30 @@ class ReservationManagementTest {
     }
 
     @Test
+    void reservationShouldBeValid() {
+        Reservation r = reservationManagement.addReservation(
+                restaurantId, "Juan García", "+34 612 345 678", 4,
+                LocalDateTime.of(2026, 3, 23, 14, 0) // Monday, within opening hours
+        );
+
+        assertNotNull(r);
+    }
+
+    @Test
     void restaurantShouldExist() {
         Reservation r = reservationManagement.addReservation(
                 UUID.randomUUID(), "Juan", "123", 4,
                 LocalDateTime.of(2026, 3, 23, 14, 0)
+        );
+
+        assertNull(r);
+    }
+
+    @Test
+    void shouldNotReserveOnClosingDay() {
+        Reservation r = reservationManagement.addReservation(
+                restaurantId, "Juan", "123", 4,
+                LocalDateTime.of(2026, 3, 22, 14, 0) // Sunday → closing day
         );
 
         assertNull(r);
@@ -64,6 +84,14 @@ class ReservationManagementTest {
         );
 
         assertNull(r);
+    }
+
+    @Test
+    void endTimeShouldBeTwoHoursAfterStart() {
+        LocalDateTime start = LocalDateTime.of(2026, 3, 23, 14, 0);
+        Reservation r = reservationManagement.addReservation(restaurantId, "Juan", "123", 4, start);
+
+        assertEquals(start.plusHours(2), r.getEndTime());
     }
 
     @Test

@@ -26,6 +26,7 @@ public class RestaurantManagement {
         if (!restaurants.containsKey(id)) {
             return false;
         }
+
         restaurants.remove(id);
         return true;
     }
