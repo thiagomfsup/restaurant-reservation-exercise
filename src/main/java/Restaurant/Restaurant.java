@@ -1,13 +1,17 @@
+package Restaurant;
+
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Map;
+import java.util.UUID;
 
-@lombok.Builder
+@Builder
 @Getter
 public class Restaurant {
-    private int id;
+    private UUID id;
     private String name;
     private int capacity;
     private Map<DayOfWeek, LocalTime[]> schedule;

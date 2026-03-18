@@ -52,7 +52,7 @@ This exercise is split into **two phases** and emphasizes:
 
 ## 🧩 Functional Requirements
 
-### Phase 1: Restaurant Management
+### Phase 1: Restaurant Reservation.Reservation
 
 Implement functionality to:
 
@@ -70,7 +70,7 @@ Each restaurant should include:
 
 ---
 
-### Phase 2: Reservation Management
+### Phase 2: Reservation Reservation
 
 Implement functionality to:
 
@@ -81,7 +81,7 @@ Implement functionality to:
 Each reservation must include:
 
 * Unique Reservation ID (UUID generated)
-* Reference to a Restaurant ID
+* Reference to a Restaurant.Restaurant ID
 * Customer name
 * Customer phone number
 * Party size
