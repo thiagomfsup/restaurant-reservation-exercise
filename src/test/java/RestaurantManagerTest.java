@@ -17,4 +17,17 @@ public class RestaurantManagerTest {
 
     }
 
+    @Test
+    void removeRestaurant() {
+        restaurantManager = new RestaurantManager();
+        Restaurant restaurant = new Restaurant(1,"Restaurante1", 100);
+
+        restaurantManager.addRestaurant(restaurant);
+        restaurantManager.deleteRestaurant(restaurant);
+
+        assertThat(restaurantManager.getRestaurants())
+                .doesNotContain(restaurant);
+
+    }
+
 }
