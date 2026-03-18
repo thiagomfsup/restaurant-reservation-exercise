@@ -1,7 +1,10 @@
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import exceptions.OverlapException;
 
 public class Restaurant {
 
@@ -11,6 +14,7 @@ public class Restaurant {
     private LocalTime openingTime;
     private LocalTime closingTime;
     private Set<DayOfWeek> closingDays;
+    private final List<Reservation> reservations;
 
     public Restaurant(
             String id,
@@ -48,6 +52,37 @@ public class Restaurant {
 
         //If closingDays is null, it will be initialized as an empty set, otherwise it will be copied, to prevent null pointer exceptions
         this.closingDays = closingDays == null ? Collections.emptySet() : Set.copyOf(closingDays);
+        this.reservations = new ArrayList<>();
+    }
+
+    public void reserve(Reservation reservation) throws OverlapException {
+        if (reservation == null) {
+            throw new IllegalArgumentException("Reservation is required");
+        }
+        if (reservation.getPartySize() <= 0) {
+            throw new IllegalArgumentException("Party size must be greater than zero");
+        }
+        if (reservation.getPartySize() > maxCapacity) {
+            throw new OverlapException();
+        }
+
+        int overlappingPeople = 0;
+        for (Reservation existing : reservations) {
+            if (isOverlapping(existing, reservation)) {
+                overlappingPeople += existing.getPartySize();
+            }
+        }
+
+        if (overlappingPeople + reservation.getPartySize() > maxCapacity) {
+            throw new OverlapException();
+        }
+
+        reservations.add(reservation);
+    }
+
+    private boolean isOverlapping(Reservation a, Reservation b) {
+        return a.getStartTime().isBefore(b.getEndTime())
+                && a.getEndTime().isAfter(b.getStartTime());
     }
 
 
