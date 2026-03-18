@@ -2,6 +2,11 @@ package com.gft.exercise.restaurants;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalTime;
 import java.util.Set;
@@ -9,14 +14,19 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@ExtendWith(MockitoExtension.class)
 class RestaurantManagerImplTest {
 
-    private RestaurantManager restaurantManager;
+    @Spy
+    private RestaurantRepository restaurantRepository = new InMemoryRestaurantRepository();
 
-    @BeforeEach
-    void setUp() {
-        restaurantManager = new RestaurantManagerImpl();
-    }
+    @InjectMocks
+    private RestaurantManagerImpl restaurantManager;
+
+//    @BeforeEach
+//    void setUp() {
+//        restaurantManager = new RestaurantManagerImpl();
+//    }
 
     @Test
     void shouldNotAcceptNullName() {
@@ -35,6 +45,12 @@ class RestaurantManagerImplTest {
     @Test
     void shouldNotAcceptNegativeCapacity() {
         assertThatThrownBy(() -> restaurantManager.add("A Name", -10, LocalTime.now(), LocalTime.now().plusHours(8), Set.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void shouldNotAcceptCloseTimeBeforeOpenTime() {
+        assertThatThrownBy(() -> restaurantManager.add("A Name", 10, LocalTime.now(), LocalTime.now().minusHours(1), Set.of()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

@@ -2,11 +2,31 @@ package com.gft.exercise.restaurants;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
 public record Restaurant(UUID id, String name, int capacity, LocalTime open, LocalTime close,
                          Set<LocalDate> closingDays) {
+
+    public Restaurant {
+        if (name == null || open == null || close == null || closingDays == null) {
+            throw new IllegalArgumentException("Input parameter cannot be null");
+        }
+
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("Capacity must be a positive number");
+        }
+
+        if (close.isBefore(open)){
+            throw new IllegalArgumentException("Close time must be after Open time");
+        }
+
+        // TODO more validations
+
+        // ensure immutable
+        closingDays = Set.copyOf(closingDays);
+    }
 
     public static class Builder {
         private String name;
