@@ -1,7 +1,7 @@
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-class Reservation {
+public class Reservation {
     private final UUID id;
     private final String restaurantId;
     private final String customerName;
@@ -10,7 +10,23 @@ class Reservation {
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
 
-    Reservation(String restaurantId, String customerName, String customerPhoneNumber, int partySize, LocalDateTime startTime) {
+    public Reservation(String restaurantId, String customerName, String customerPhoneNumber, int partySize, LocalDateTime startTime) {
+        if (restaurantId == null || restaurantId.isBlank()) {
+            throw new IllegalArgumentException("Restaurant ID is required");
+        }
+        if (customerName == null || customerName.isBlank()) {
+            throw new IllegalArgumentException("Customer name is required");
+        }
+        if (customerPhoneNumber == null || customerPhoneNumber.isBlank()) {
+            throw new IllegalArgumentException("Customer phone number is required");
+        }
+        if (partySize <= 0) {
+            throw new IllegalArgumentException("Party size must be greater than zero");
+        }
+        if (startTime == null) {
+            throw new IllegalArgumentException("Start time is required");
+        }
+
         this.id = UUID.randomUUID();
         this.restaurantId = restaurantId;
         this.customerName = customerName;
@@ -20,31 +36,31 @@ class Reservation {
         this.endTime = startTime.plusHours(2);
     }
 
-    UUID getId() {
+    public UUID getId() {
         return id;
     }
 
-    String getRestaurantId() {
+    public String getRestaurantId() {
         return restaurantId;
     }
 
-    String getCustomerName() {
+    public String getCustomerName() {
         return customerName;
     }
 
-    String getCustomerPhoneNumber() {
+    public String getCustomerPhoneNumber() {
         return customerPhoneNumber;
     }
 
-    int getPartySize() {
+    public int getPartySize() {
         return partySize;
     }
 
-    LocalDateTime getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    LocalDateTime getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 }
