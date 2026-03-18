@@ -10,9 +10,10 @@ import java.util.UUID;
 @Getter
 public class Reservation {
     private UUID reservationId;
-    private int restaurantId;
+    private UUID restaurantId;
     private String customerName;
-    private int phoneNumber;
-    private int reservationSize;
-    private LocalDateTime reservationDate;
+    private String phoneNumber;
+    private int partySize;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 }
