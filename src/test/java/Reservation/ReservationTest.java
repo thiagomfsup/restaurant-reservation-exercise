@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ReservationManagementTest {
+class ReservationTest {
 
     private ReservationManagement reservationManagement;
     private RestaurantManagement restaurantManagement;

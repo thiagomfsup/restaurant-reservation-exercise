@@ -10,13 +10,7 @@ public class RestaurantManagement {
     private final Map<UUID, Restaurant> restaurants = new HashMap<>();
 
     public Restaurant addRestaurant(String name, int capacity, Map<DayOfWeek, LocalTime[]> schedule, DayOfWeek closingDay) {
-        Restaurant restaurant = Restaurant.builder()
-                .id(UUID.randomUUID())
-                .name(name)
-                .capacity(capacity)
-                .schedule(schedule)
-                .closingDay(closingDay)
-                .build();
+        Restaurant restaurant = new Restaurant(UUID.randomUUID(), name, capacity, schedule, closingDay);
 
         restaurants.put(restaurant.getId(), restaurant);
         return restaurant;

@@ -24,15 +24,15 @@ public class ReservationManagement {
             return null;
 
         LocalDateTime endTime = startTime.plusHours(2);
-        Reservation reservation = Reservation.builder()
-                .reservationId(UUID.randomUUID())
-                .restaurantId(restaurantId)
-                .customerName(customerName)
-                .phoneNumber(phoneNumber)
-                .partySize(partySize)
-                .startTime(startTime)
-                .endTime(endTime)
-                .build();
+        Reservation reservation = new Reservation(
+                UUID.randomUUID(),
+                restaurantId,
+                customerName,
+                phoneNumber,
+                partySize,
+                startTime,
+                endTime
+        );
 
         reservations.put(reservation.getReservationId(), reservation);
         return reservation;
@@ -53,15 +53,15 @@ public class ReservationManagement {
         validate(restaurantId, partySize, startTime, reservationId);
 
         LocalDateTime endTime = startTime.plusHours(2);
-        Reservation updated = Reservation.builder()
-                .reservationId(reservationId)
-                .restaurantId(restaurantId)
-                .customerName(customerName)
-                .phoneNumber(phoneNumber)
-                .partySize(partySize)
-                .startTime(startTime)
-                .endTime(endTime)
-                .build();
+        Reservation updated = new Reservation(
+                reservationId,
+                restaurantId,
+                customerName,
+                phoneNumber,
+                partySize,
+                startTime,
+                endTime
+        );
 
         reservations.put(reservationId, updated);
         return updated;
@@ -88,7 +88,7 @@ public class ReservationManagement {
         LocalTime end = start.plusHours(2);
 
         if (start.isBefore(openingTime))
-             return false;
+            return false;
 
         if (!closingTime.equals(LocalTime.MIDNIGHT) && end.isAfter(closingTime))
             return false;
