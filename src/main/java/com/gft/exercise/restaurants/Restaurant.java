@@ -1,8 +1,9 @@
 package com.gft.exercise.restaurants;
 
+import com.gft.exercise.reservations.Reservation;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +27,22 @@ public record Restaurant(UUID id, String name, int capacity, LocalTime open, Loc
 
         // ensure immutable
         closingDays = Set.copyOf(closingDays);
+    }
+
+    public void validate(Reservation newReservation) {
+        final var dateTime = newReservation.dateTime();
+
+        if (this.closingDays().contains(dateTime.toLocalDate())) {
+            throw new IllegalArgumentException("Cannot make a reservation when the restaurant is closed");
+        }
+
+        if (dateTime.toLocalTime().isBefore(this.open())) {
+            throw new IllegalArgumentException("Cannot make a reservation before restaurant's opening hour");
+        }
+
+        if (dateTime.toLocalTime().isAfter(this.close())) {
+            throw new IllegalArgumentException("Cannot make a reservation after restaurant's closing hour");
+        }
     }
 
     public static class Builder {
