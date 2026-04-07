@@ -49,7 +49,7 @@ class RestaurantManagerImplTest {
 
     @Test
     void shouldRegisterAValidRestaurant() {
-        Restaurant aName = restaurantManager.add("A Name", 10, LocalTime.now(), LocalTime.now().plusHours(8), Set.of());
+        Restaurant aName = restaurantManager.add("A Name", 10, LocalTime.of(8, 0), LocalTime.of(22, 0), Set.of());
 
         assertThat(aName).isNotNull();
 
