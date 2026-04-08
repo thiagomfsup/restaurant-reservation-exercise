@@ -17,8 +17,7 @@ public record Reservation(UUID id, UUID restaurantId, Customer customer, int par
         final var otherStart = other.dateTime.toLocalTime();
         final var otherEnd = other.dateTime.toLocalTime().plusHours(duration);
 
-        return (thisEnd.isAfter(otherStart) && thisEnd.isBefore(otherEnd) ||
-                (thisStart.isAfter(otherStart) && thisStart.isBefore(otherEnd)) );
+        return otherStart.isBefore(thisEnd) && otherEnd.isAfter(thisStart);
     }
 
     public record Customer(String name, String phoneNumber) {}

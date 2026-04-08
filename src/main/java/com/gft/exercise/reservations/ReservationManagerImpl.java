@@ -39,7 +39,7 @@ public class ReservationManagerImpl implements ReservationManager {
                 .filter(reservation -> reservation.overlap(newReservation))
                 .mapToInt(Reservation::partySize).sum();
 
-        if (overlapPartySize + newReservation.partySize() >= restaurant.capacity())
+        if (overlapPartySize + newReservation.partySize() > restaurant.capacity())
             throw new IllegalArgumentException("Restaurant is full");
 
         return reservationRepository.save(newReservation);
