@@ -1,7 +1,9 @@
 package com.gft.exercise.reservations;
 
+import com.gft.exercise.restaurants.Restaurant;
 import com.gft.exercise.restaurants.RestaurantRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -25,7 +27,7 @@ public class ReservationManagerImpl implements ReservationManager {
         if (restaurant == null)
             throw new NoSuchElementException("Restaurant ID %s doesn't exist".formatted(restaurantId));
 
-        final var newReservation = Reservation.builder()
+        final var reservation = Reservation.builder()
                 .setRestaurantId(restaurantId)
                 .setCustomerName(customerName)
                 .setCustomePhoneNumber(customerPhone)
@@ -33,19 +35,15 @@ public class ReservationManagerImpl implements ReservationManager {
                 .setDateTime(dateTime)
                 .build();
 
-        restaurant.validate(newReservation);
+        final var reservationBook = this.reservationBookForRestaurantAndDate(restaurant, dateTime.toLocalDate());
 
-        final var overlapPartySize = getReservationBetween(restaurantId, dateTime).stream()
-                .filter(reservation -> reservation.overlap(newReservation))
-                .mapToInt(Reservation::partySize).sum();
+        reservationBook.addReservation(reservation);
 
-        if (overlapPartySize + newReservation.partySize() > restaurant.capacity())
-            throw new IllegalArgumentException("Restaurant is full");
-
-        return reservationRepository.save(newReservation);
+        return reservationRepository.save(reservation);
     }
 
-    private Set<Reservation> getReservationBetween(UUID restaurantId, LocalDateTime dateTime) {
-        return reservationRepository.getByRestaurantAndDate(restaurantId, dateTime.toLocalDate());
+    private ReservationBook reservationBookForRestaurantAndDate(Restaurant restaurant, LocalDate date) {
+        final var reservations = reservationRepository.getByRestaurantAndDate(restaurant.id(), date);
+        return new ReservationBook(restaurant, date, reservations);
     }
 }
